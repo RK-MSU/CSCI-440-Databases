@@ -31,6 +31,7 @@ public class Customer extends Model {
         lastName = results.getString("LastName");
         customerId = results.getLong("CustomerId");
         supportRepId = results.getLong("SupportRepId");
+        email = results.getString("Email");
     }
 
     public String getFirstName() {
@@ -58,16 +59,18 @@ public class Customer extends Model {
     }
 
     public static List<Customer> all(int page, int count) {
-        try (Connection conn = DB.connect();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT * FROM customers LIMIT ?"
-             )) {
+        String query = "SELECT * FROM customers LIMIT ? OFFSET ?";
+
+        try (Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, count);
+            stmt.setInt(2, count * (page - 1));
+
             ResultSet results = stmt.executeQuery();
             List<Customer> resultList = new LinkedList<>();
             while (results.next()) {
                 resultList.add(new Customer(results));
             }
+
             return resultList;
         } catch (SQLException sqlException) {
             throw new RuntimeException(sqlException);
@@ -75,9 +78,11 @@ public class Customer extends Model {
     }
 
     public static Customer find(long customerId) {
-        try (Connection conn = DB.connect();
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM customers WHERE CustomerId=?")) {
+        String query = "SELECT * FROM customers WHERE CustomerId=?";
+
+        try (Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setLong(1, customerId);
+
             ResultSet results = stmt.executeQuery();
             if (results.next()) {
                 return new Customer(results);

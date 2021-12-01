@@ -18,7 +18,11 @@ public class PlaylistsController {
         });
 
         get("/playlists/:id", (req, resp) -> {
-            Playlist playlist = Playlist.find(Integer.parseInt(req.params(":id")));
+
+            int playlist_id = Integer.parseInt(req.params(":id"));
+
+            Playlist playlist = Playlist.find(playlist_id);
+
             return Web.renderTemplate("templates/playlists/show.vm",
                     "playlist", playlist);
         });

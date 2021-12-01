@@ -25,6 +25,7 @@ public class Invoice extends Model {
 
     private Invoice(ResultSet results) throws SQLException {
         billingAddress = results.getString("BillingAddress");
+        billingCity = results.getString("BillingCity");
         billingState = results.getString("BillingState");
         billingCountry = results.getString("BillingCountry");
         billingPostalCode = results.getString("BillingPostalCode");
@@ -33,9 +34,20 @@ public class Invoice extends Model {
     }
 
     public List<InvoiceItem> getInvoiceItems(){
-        //TODO implement
-        return Collections.emptyList();
+        String query = "SELECT * FROM invoice_items WHERE InvoiceId=?";
+
+        try (Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            ResultSet results = stmt.executeQuery();
+            List<InvoiceItem> resultList = new LinkedList<>();
+            while (results.next()) {
+                resultList.add(new InvoiceItem(results));
+            }
+            return resultList;
+        } catch (SQLException sqlException) {
+            throw new RuntimeException(sqlException);
+        }
     }
+
     public Customer getCustomer() {
         return null;
     }
@@ -97,16 +109,18 @@ public class Invoice extends Model {
     }
 
     public static List<Invoice> all(int page, int count) {
-        try (Connection conn = DB.connect();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT * FROM invoices LIMIT ?"
-             )) {
+        String query = "SELECT * FROM invoices LIMIT ? OFFSET ?";
+
+        try (Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, count);
+            stmt.setInt(2, count * (page - 1));
+
             ResultSet results = stmt.executeQuery();
             List<Invoice> resultList = new LinkedList<>();
             while (results.next()) {
                 resultList.add(new Invoice(results));
             }
+
             return resultList;
         } catch (SQLException sqlException) {
             throw new RuntimeException(sqlException);
@@ -114,10 +128,12 @@ public class Invoice extends Model {
     }
 
     public static Invoice find(long invoiceId) {
-        try (Connection conn = DB.connect();
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM invoices WHERE InvoiceId=?")) {
+        String query = "SELECT * FROM invoices WHERE InvoiceId=?";
+
+        try (Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setLong(1, invoiceId);
             ResultSet results = stmt.executeQuery();
+
             if (results.next()) {
                 return new Invoice(results);
             } else {

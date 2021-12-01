@@ -1,6 +1,12 @@
 package edu.montana.csci.csci440.model;
 
+import edu.montana.csci.csci440.util.DB;
+
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +43,10 @@ public class Model {
 
     public boolean hasErrors(){
         return _errors.size() > 0;
+    }
+
+    public void clearErrors() {
+        _errors.clear();
     }
 
     @Override
@@ -77,4 +87,5 @@ public class Model {
         }
         return Objects.hash(values.toArray());
     }
+
 }

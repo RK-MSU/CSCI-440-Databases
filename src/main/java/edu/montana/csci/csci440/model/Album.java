@@ -17,12 +17,96 @@ public class Album extends Model {
     String title;
 
     public Album() {
+
     }
 
     private Album(ResultSet results) throws SQLException {
         title = results.getString("Title");
         albumId = results.getLong("AlbumId");
         artistId = results.getLong("ArtistId");
+    }
+
+    @Override
+    public boolean create() {
+        // validate data
+        if (!verify()) {
+            // not valid
+            return false;
+        }
+
+        String query = "INSERT INTO albums (Title, ArtistId) VALUES (?, ?)";
+
+        try(Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, getTitle());
+            stmt.setLong(2, getArtistId());
+
+            int result = stmt.executeUpdate();
+            this.albumId = DB.getLastID(conn);
+
+            return result == 1;
+
+        } catch (SQLException sqlException){
+            throw new RuntimeException(sqlException);
+        }
+    }
+
+    @Override
+    public boolean update() {
+        // validate data
+        if (!verify()) {
+            // not valid
+            return false;
+        }
+
+        String query = "UPDATE albums SET Title=?, ArtistId=? WHERE AlbumId=?";
+
+        try(Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, getTitle());
+            stmt.setLong(2, getArtistId());
+            stmt.setLong(3, getArtistId());
+
+            int result = stmt.executeUpdate();
+
+            return result == 1;
+
+        } catch (SQLException sqlException){
+            throw new RuntimeException(sqlException);
+        }
+    }
+
+    @Override
+    public boolean verify() {
+        _errors.clear();
+
+        if( title == null || title.trim().equals("")) {
+            addError("Title cannot be empty");
+        }
+        if( artistId == null || artistId == 0) {
+            addError("Artist cannot be empty.");
+        }
+
+        return !hasErrors();
+    }
+
+
+    @Override
+    public void delete() {
+
+        // tracks
+        List<Track> tracks = this.getTracks();
+        for (Track t : tracks) {
+            t.delete();
+        }
+
+        String query = "DELETE FROM albums WHERE AlbumId=?";
+        try(Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setLong(1, getAlbumId());
+            int result = stmt.executeUpdate();
+        } catch (SQLException sqlException){
+            throw new RuntimeException(sqlException);
+        }
     }
 
     public Artist getArtist() {
@@ -61,12 +145,16 @@ public class Album extends Model {
         return all(0, Integer.MAX_VALUE);
     }
 
+    // Paging
     public static List<Album> all(int page, int count) {
-        try (Connection conn = DB.connect();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT * FROM albums LIMIT ?"
-             )) {
+
+        String query = "SELECT * FROM albums LIMIT ? OFFSET ?";
+
+        try (Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, count);
+            stmt.setInt(2, count * (page - 1));
+
             ResultSet results = stmt.executeQuery();
             List<Album> resultList = new LinkedList<>();
             while (results.next()) {
@@ -77,6 +165,28 @@ public class Album extends Model {
             throw new RuntimeException(sqlException);
         }
     }
+
+    public static List<Album> all(int page, int count, String orderBy, String sort) {
+
+        String query = "SELECT * FROM albums ORDER BY "+orderBy+" "+sort+" LIMIT ? OFFSET ?";
+
+        try (Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, count);
+            stmt.setInt(2, count * (page - 1));
+
+            ResultSet results = stmt.executeQuery();
+            List<Album> resultList = new LinkedList<>();
+            while (results.next()) {
+                resultList.add(new Album(results));
+            }
+            return resultList;
+        } catch (SQLException sqlException) {
+            throw new RuntimeException(sqlException);
+        }
+    }
+
+
 
     public static Album find(long i) {
         try (Connection conn = DB.connect();
@@ -94,8 +204,21 @@ public class Album extends Model {
     }
 
     public static List<Album> getForArtist(Long artistId) {
-        // TODO implement
-        return Collections.emptyList();
+        String query = "SELECT * FROM albums WHERE ArtistId=?";
+
+        try (Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setLong(1, artistId);
+
+            ResultSet results = stmt.executeQuery();
+            List<Album> resultList = new LinkedList<>();
+            while (results.next()) {
+                resultList.add(new Album(results));
+            }
+            return resultList;
+        } catch (SQLException sqlException) {
+            throw new RuntimeException(sqlException);
+        }
+
     }
 
 }

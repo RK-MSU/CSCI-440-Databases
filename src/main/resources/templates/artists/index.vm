@@ -5,22 +5,29 @@
 <table>
     <thead>
     <tr>
-        <th>Artist ID</th>
-        <th>Name</th>
+        <th style="white-space: nowrap;">
+            <a href="/artists?$id_q_str">Artist ID</a>
+        </th>
+        <th>
+            <a href="/artists?$name_q_str">Name</a>
+        </th>
     </tr>
     </thead>
     <tbody>
         #foreach( $artist in $artists )
         <tr>
-            <td><a href="/artists/$artist.ArtistId">$artist.ArtistId</a></td>
-            <td>$!artist.Name</td>
+            <td>
+                <a href="/artists/$artist.ArtistId">$artist.ArtistId</a>
+            </td>
+            <td>
+                <a href="/artists/$artist.ArtistId">$!artist.Name</a>
+            </td>
         </tr>
         #end
     </tbody>
 </table>
 
 $web.pagingWidget($artists)
-
 
 <a href="/artists/new">[Create New Artist]</a>
 

@@ -29,7 +29,7 @@
         #foreach( $album in $artist.albums )
         <tr>
             <td><a href="/albums/$album.AlbumId">$album.AlbumId</a></td>
-            <td>$!album.Title</td>
+            <td><a href="/albums/$album.AlbumId">$!album.Title</a></td>
         </tr>
         #end
     </tbody>

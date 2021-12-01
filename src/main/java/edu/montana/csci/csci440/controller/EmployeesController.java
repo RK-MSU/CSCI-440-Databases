@@ -19,7 +19,7 @@ public class EmployeesController {
 
         post("/employees/new", (req, resp) -> {
             Employee emp = new Employee();
-            Web.putValuesInto(emp, "FirstName", "LastName");
+            Web.putValuesInto(emp, "FirstName", "LastName", "Email");
             if (emp.create()) {
                 Web.message("Created An Employee!");
                 return Web.redirect("/employees/" + emp.getEmployeeId());
@@ -32,7 +32,7 @@ public class EmployeesController {
 
         /* READ */
         get("/employees", (req, resp) -> {
-            List<Employee> employees = Employee.all(1, Web.PAGE_SIZE);
+            List<Employee> employees = Employee.all(Web.getPage(), Web.PAGE_SIZE);
             return Web.renderTemplate("templates/employees/index.vm",
                     "employees", employees);
         });
@@ -64,7 +64,7 @@ public class EmployeesController {
 
         post("/employees/:id", (req, resp) -> {
             Employee emp = Employee.find(Integer.parseInt(req.params(":id")));
-            Web.putValuesInto(emp, "FirstName", "LastName");
+            Web.putValuesInto(emp, "FirstName", "LastName", "Email");
             if (emp.update()) {
                 Web.message("Updated Employee!");
                 return Web.redirect("/employees/" + emp.getEmployeeId());

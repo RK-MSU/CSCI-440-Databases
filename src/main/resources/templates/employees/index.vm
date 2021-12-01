@@ -11,6 +11,8 @@
         <th>First Name</th>
         <th>Last Name</th>
         <th>Email</th>
+        <th>Boss</th>
+        <th># Customers</th>
     </tr>
     </thead>
     <tbody>
@@ -20,6 +22,8 @@
             <td>$!employee.FirstName</td>
             <td>$!employee.LastName</td>
             <td>$!employee.Email</td>
+            <td>$!employee.Boss.FirstName $!employee.Boss.LastName</td>
+            <td>$!employee.NumCustomers</td>
         </tr>
         #end
     </tbody>

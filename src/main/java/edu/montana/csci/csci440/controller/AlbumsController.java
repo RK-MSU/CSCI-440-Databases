@@ -3,12 +3,17 @@ package edu.montana.csci.csci440.controller;
 import edu.montana.csci.csci440.model.Album;
 import edu.montana.csci.csci440.util.Web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
 
 public class AlbumsController {
+
+    static List<String> sortValues = new ArrayList<String>(List.of("ASC", "DESC"));
+    static List<String> orderByValues = new ArrayList<String>();
+
     public static void init(){
         /* CREATE */
         get("/albums/new", (req, resp) -> {
@@ -31,9 +36,45 @@ public class AlbumsController {
 
         /* READ */
         get("/albums", (req, resp) -> {
-            List<Album> albums = Album.all(Web.getPage(), Web.PAGE_SIZE);
+
+            orderByValues.add("AlbumId");
+            orderByValues.add("Title");
+
+            String orderBy = req.queryParams("orderBy");
+            String sort = req.queryParams("sort");
+
+            if(!orderByValues.contains(orderBy)) {
+                orderBy = orderByValues.get(0);
+            }
+            if(!sortValues.contains(sort)) {
+                sort = sortValues.get(0);
+            }
+
+//            List<Album> albums = Album.all(Web.getPage(), Web.PAGE_SIZE);
+            List<Album> albums = Album.all(Web.getPage(), Web.PAGE_SIZE, orderBy, sort);
+
+            String query_tmpl = "orderBy=%s&sort=%s";
+            String id_query_str = "";
+            String title_query_str = "";
+
+            // ArtistId col
+            if(orderBy.equals(orderByValues.get(0)) && sort.equals(sortValues.get(0))) {
+                id_query_str = String.format(query_tmpl, orderByValues.get(0), sortValues.get(1));
+            } else {
+                id_query_str = String.format(query_tmpl, orderByValues.get(0), sortValues.get(0));
+            }
+
+            // Title col
+            if(orderBy.equals(orderByValues.get(1)) && sort.equals(sortValues.get(0))) {
+                title_query_str = String.format(query_tmpl, orderByValues.get(1), sortValues.get(1));
+            } else {
+                title_query_str = String.format(query_tmpl, orderByValues.get(1), sortValues.get(0));
+            }
+
             return Web.renderTemplate("templates/albums/index.vm",
-                    "albums", albums);
+                    "albums", albums,
+                    "id_q_str", id_query_str,
+                    "title_q_str", title_query_str);
         });
 
         get("/albums/:id", (req, resp) -> {

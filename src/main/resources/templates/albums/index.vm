@@ -5,8 +5,15 @@
 <table>
     <thead>
     <tr>
-        <th>Album ID</th>
-        <th>Title</th>
+        <th style="white-space: nowrap;">
+            <a href="/albums?$id_q_str">Album ID</a>
+        </th>
+        <th>
+            <a href="/albums?$title_q_str">Title</a>
+        </th>
+        <th>
+            Artist
+        </th>
     </tr>
     </thead>
     <tbody>
@@ -14,6 +21,7 @@
         <tr>
             <td><a href="/albums/$album.AlbumId">$album.AlbumId</a></td>
             <td>$!album.Title</td>
+            <td>$album.Artist.Name</td>
         </tr>
         #end
     </tbody>
