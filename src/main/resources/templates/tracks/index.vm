@@ -15,12 +15,12 @@
 <table>
     <thead>
     <tr>
-        <th>Track ID</th>
-        <th>Name</th>
+        <th><a href="?$!id_q_str">Track ID</a></th>
+        <th><a href="?$!name_q_str">Name</a></th>
         <th>Album</th>
         <th>ArtistName</th>
-        <th><a href="?o=Milliseconds">Milliseconds</a></th>
-        <th><a href="?o=Bytes">Bytes</a></th>
+        <th><a href="?$!milliseconds_q_str">Milliseconds</a></th>
+        <th><a href="?$!bytes_q_str">Bytes</a></th>
         <th>UnitPrice</th>
     </tr>
     </thead>

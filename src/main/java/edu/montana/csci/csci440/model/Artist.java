@@ -127,32 +127,17 @@ public class Artist extends Model {
     }
 
     public static List<Artist> all(int page, int count) {
-
         String query = "SELECT * FROM artists LIMIT ? OFFSET ?";
-
-        try (Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, count);
-            stmt.setInt(2, count * (page - 1));
-
-            ResultSet results = stmt.executeQuery();
-            List<Artist> resultList = new LinkedList<>();
-            while (results.next()) {
-                resultList.add(new Artist(results));
-            }
-
-            return resultList;
-        } catch (SQLException sqlException) {
-            throw new RuntimeException(sqlException);
-        }
+        return _all(page, count, query);
     }
 
-
     public static List<Artist> all(int page, int count, String orderBy, String sort) {
-
         String query = "SELECT * FROM artists ORDER BY "+orderBy+" "+sort+" LIMIT ? OFFSET ?";
+        return _all(page, count, query);
+    }
 
+    private static List<Artist> _all(int page, int count, String query) {
         try (Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
-
             stmt.setInt(1, count);
             stmt.setInt(2, count * (page - 1));
 
@@ -161,7 +146,6 @@ public class Artist extends Model {
             while (results.next()) {
                 resultList.add(new Artist(results));
             }
-
             return resultList;
         } catch (SQLException sqlException) {
             throw new RuntimeException(sqlException);

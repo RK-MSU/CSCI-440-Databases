@@ -407,14 +407,22 @@ public class Track extends Model {
     }
 
     public static List<Track> all(int page, int count, String orderBy) {
-
         String query = "SELECT * FROM tracks ORDER BY " + orderBy + " LIMIT ? OFFSET ?";
+        return _all(page, count, query);
+    }
+
+    public static List<Track> all(int page, int count, String orderBy, String sort) {
+        String query = "SELECT * FROM tracks ORDER BY " + orderBy + " "+sort+" LIMIT ? OFFSET ?";
+        return _all(page, count, query);
+    }
+
+
+    private static List<Track> _all(int page, int count, String query) {
 
         try (Connection conn = DB.connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, count);
             stmt.setInt(2, count * (page - 1));
-
 
             ResultSet results = stmt.executeQuery();
 
