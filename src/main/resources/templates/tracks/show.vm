@@ -19,6 +19,10 @@
         <td><a href="/albums/$!track.AlbumId">$!track.AlbumTitle</a></td>
     </tr>
     <tr>
+        <td>Artist</td>
+        <td><a href="/artists/$!track.ArtistId">$!track.ArtistName</a></td>
+    </tr>
+    <tr>
         <td>Milliseconds</td>
         <td>$!track.Milliseconds</td>
     </tr>
