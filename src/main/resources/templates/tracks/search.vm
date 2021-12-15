@@ -21,10 +21,10 @@
                 <td>Artist</td>
                 <td>$web.select('Artist', 'Name', $!web.param('ArtistId'), true)</td>
             </tr>
-            <tr>
-                <td>Media Type</td>
-                <td>$web.select('MediaType', 'Name', $!web.param('MediaTypeId'), true)</td>
-            </tr>
+##            <tr>
+##                <td>Media Type</td>
+##                <td>$web.select('MediaType', 'Name', $!web.param('MediaTypeId'), true)</td>
+##            </tr>
             <tr>
                 <td>Genre</td>
                 <td>$web.select('Genre', 'Name', $!web.param('GenreId'), true)</td>

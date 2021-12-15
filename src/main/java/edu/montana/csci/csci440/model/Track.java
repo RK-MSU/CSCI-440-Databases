@@ -320,13 +320,18 @@ public class Track extends Model {
     }
 
     public static List<Track> advancedSearch(int page, int count,
-                                             String search, Integer artistId, Integer albumId,
-                                             Integer maxRuntime, Integer minRuntime) {
+                                             String search,
+                                             Integer artistId,
+                                             Integer albumId,
+                                             Integer genreId,
+                                             Integer maxRuntime,
+                                             Integer minRuntime) {
 
         LinkedList<Object> args = new LinkedList<>();
 
-        String query = "SELECT * FROM tracks " +
+        String query = "SELECT tracks.*, albums.ArtistId FROM tracks " +
                 "JOIN albums ON tracks.AlbumId = albums.AlbumId " +
+                // "JOIN genres ON tracks.GenreId = genres.GenreId " +
                 "WHERE name LIKE ?";
 
         args.add("%" + search + "%");
@@ -336,6 +341,16 @@ public class Track extends Model {
             query += " AND ArtistId=? ";
             args.add(artistId);
         }
+
+        if (albumId != null) {
+            query += " AND AlbumId=? ";
+            args.add(albumId);
+        }
+
+//        if (genreId != null) {
+//            query += " AND genres.GenreId=? ";
+//            args.add(genreId);
+//        }
 
         query += " LIMIT ?";
         args.add(count);
