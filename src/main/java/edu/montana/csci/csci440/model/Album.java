@@ -141,6 +141,10 @@ public class Album extends Model {
         return artistId;
     }
 
+    public void setArtistId(Long id) {
+        artistId = id;
+    }
+
     public static List<Album> all() {
         return all(0, Integer.MAX_VALUE);
     }
@@ -185,7 +189,6 @@ public class Album extends Model {
             throw new RuntimeException(sqlException);
         }
     }
-
 
 
     public static Album find(long i) {
